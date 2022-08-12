@@ -12,6 +12,14 @@ require $projectDirectory . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 $configProvider = new ConfigProvider($projectDirectory);
 $config = $configProvider->get();
 
+if (! isset($config['db'])) {
+    throw new Exception('Missing DB config');
+}
+
+if (! isset($config['token'])) {
+    throw new Exception('Missing token config');
+}
+
 if (! isset($config['bot'])) {
     throw new Exception('Missing bot config');
 }
@@ -20,15 +28,9 @@ if (! isset($config['channel'])) {
     throw new Exception('Missing channel config');
 }
 
-if (! isset($config['db'])) {
-    throw new Exception('Missing DB config');
-}
-
 $dbConfig = $config['db'];
 
 $app = new App(
-    $config['bot'],
-    $config['channel'],
     new DatabaseFetcher(new DatabaseConnection(
         $dbConfig['host'],
         $dbConfig['database'],
@@ -36,6 +38,9 @@ $app = new App(
         $dbConfig['password'],
         DatabaseConnection::UTF8_MB4
     ))
+    $config['token'],
+    $config['bot'],
+    $config['channel'],
 );
 
 /** @var string $requestUrl */
