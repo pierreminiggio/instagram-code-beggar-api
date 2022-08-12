@@ -11,20 +11,31 @@ require $projectDirectory . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 $configProvider = new ConfigProvider($projectDirectory);
 $config = $configProvider->get();
+
+if (! isset($config['bot'])) {
+    throw new Exception('Missing bot config');
+}
+
+if (! isset($config['channel'])) {
+    throw new Exception('Missing channel config');
+}
+
+if (! isset($config['db'])) {
+    throw new Exception('Missing DB config');
+}
+
 $dbConfig = $config['db'];
-$featureAvailable = $config['working'] ?? false;
 
 $app = new App(
-    $featureAvailable,
+    $config['bot'],
+    $config['channel'],
     new DatabaseFetcher(new DatabaseConnection(
         $dbConfig['host'],
         $dbConfig['database'],
         $dbConfig['username'],
         $dbConfig['password'],
         DatabaseConnection::UTF8_MB4
-    )),
-    $config['token'],
-    $config['proxy']
+    ))
 );
 
 /** @var string $requestUrl */
