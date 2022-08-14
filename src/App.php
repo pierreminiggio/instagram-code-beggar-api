@@ -2,6 +2,7 @@
 
 namespace App;
 
+use DateTime;
 use DateTimeImmutable;
 use Exception;
 
@@ -143,7 +144,8 @@ class App
                     return;
                 }
 
-                $messageDate = new DateTimeImmutable($messageData['date']);
+                $messageDate = new DateTime();
+                $messageDate->setTimestamp($messageData['date']);
 
                 if ($messageDate < $dateBeforeSendingMessage) {
                     continue;
