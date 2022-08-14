@@ -2,6 +2,7 @@
 
 namespace App;
 
+use DateTimeImmutable;
 use Exception;
 
 class App
@@ -35,8 +36,9 @@ class App
       
         $username = substr($path, 1);
 
-        $message = 'Gimme code for ' . $username . '.';
+        $dateBeforeSendingMessage = new DateTimeImmutable();
 
+        $message = 'Gimme code for ' . $username . '.';
         $bot = $this->bot;
         $chatId = $this->channelId;
 
@@ -83,6 +85,81 @@ class App
             throw new Exception('Send message request has empty result->message_id value : ' . $sendMessageCurlResponse);
         }
 
-        var_dump($messageId);
+        // Wait for response
+
+        $waitTimeSeconds = 600;
+        set_time_limit($waitTimeSeconds + 60);
+
+        for ($i = 0; $i <= $waitTimeSeconds; $i++) {
+            sleep(1);
+
+            $updatesCurl = curl_init();
+            curl_setopt_array($updatesCurl, [
+                CURLOPT_RETURNTRANSFER => 1,
+                CURLOPT_URL => 'https://api.telegram.org/bot' . $bot . '/getupdates?offset=-1'
+            ]);
+
+            $updatesCurlResponse = curl_exec($updatesCurl);
+            $httpCode = curl_getinfo($updatesCurl)['http_code'];
+            curl_close($updatesCurl);
+            
+            if ($httpCode !== 200) {
+                throw new Exception('getUpdates request failed with code ' . $httpCode . ' : ' . $updatesCurlResponse);
+            }
+
+            if ($updatesCurlResponse === false) {
+                throw new Exception('No body for getUpdates request');
+            }
+            
+            $updatesCurlJsonResponse = json_decode($updatesCurlResponse, true);
+            
+            if (! $updatesCurlJsonResponse) {
+                throw new Exception('Bad JSON for getUpdates request : ' . $updatesCurlResponse);
+            }
+            
+            if (empty($updatesCurlJsonResponse['ok'])) {
+                throw new Exception('getUpdates request not ok : ' . $updatesCurlResponse);
+            }
+                
+            if (! isset($updatesCurlJsonResponse['result'])) {
+                throw new Exception('getUpdates request missing result key : ' . $updatesCurlResponse);
+            }
+            
+            $fetchedUpdates = $updatesCurlJsonResponse['result'];
+            
+            foreach ($fetchedUpdates as $fetchedUpdate) {
+                if (
+                    ! isset(
+                        $fetchedUpdate['update_id'],
+                        $fetchedUpdate['message']
+                    )
+                ) {
+                    continue;
+                }
+                    
+                $messageData = $fetchedUpdate['message'];
+
+                if (! isset($messageData['date'])) {
+                    return;
+                }
+
+                $messageDate = new DateTimeImmutable($messageData['date']);
+
+                if ($messageDate < $dateBeforeSendingMessage) {
+                    continue;
+                }
+
+                if (! isset($messageData['text'])) {
+                    return;
+                }
+
+                $text = $messageData['text'];
+
+                http_response_code(200);
+                echo $text;
+                
+                return;
+            }
+        }
     }
 }
