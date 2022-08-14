@@ -83,6 +83,6 @@ class App
             throw new Exception('Send message request has empty result->message_id value : ' . $sendMessageCurlResponse);
         }
 
-        var_dump($messageId)
+        var_dump($messageId);
     }
 }

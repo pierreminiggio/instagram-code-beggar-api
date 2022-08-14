@@ -22,8 +22,6 @@ if (! isset($config['channel'])) {
     throw new Exception('Missing channel config');
 }
 
-$dbConfig = $config['db'];
-
 $app = new App(
     $config['token'],
     $config['bot'],
