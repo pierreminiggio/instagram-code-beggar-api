@@ -16,7 +16,6 @@
     },
     "require": {
         "ext-curl": "*",
-        "pierreminiggio/config-provider": "^1.0",
-        "pierreminiggio/database-fetcher": "^1.0"
+        "pierreminiggio/config-provider": "^1.0"
     }
 }

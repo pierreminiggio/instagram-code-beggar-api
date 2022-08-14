@@ -3,13 +3,11 @@
 namespace App;
 
 use Exception;
-use PierreMiniggio\DatabaseFetcher\DatabaseFetcher;
 
 class App
 {
 
     public function __construct(
-        private DatabaseFetcher $fetcher,
         private string $token,
         private string $bot,
         private string $channelId

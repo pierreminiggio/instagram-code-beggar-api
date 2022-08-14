@@ -2,8 +2,6 @@
 
 use App\App;
 use PierreMiniggio\ConfigProvider\ConfigProvider;
-use PierreMiniggio\DatabaseConnection\DatabaseConnection;
-use PierreMiniggio\DatabaseFetcher\DatabaseFetcher;
 
 $projectDirectory = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
 
@@ -11,10 +9,6 @@ require $projectDirectory . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 $configProvider = new ConfigProvider($projectDirectory);
 $config = $configProvider->get();
-
-if (! isset($config['db'])) {
-    throw new Exception('Missing DB config');
-}
 
 if (! isset($config['token'])) {
     throw new Exception('Missing token config');
@@ -31,16 +25,9 @@ if (! isset($config['channel'])) {
 $dbConfig = $config['db'];
 
 $app = new App(
-    new DatabaseFetcher(new DatabaseConnection(
-        $dbConfig['host'],
-        $dbConfig['database'],
-        $dbConfig['username'],
-        $dbConfig['password'],
-        DatabaseConnection::UTF8_MB4
-    ))
     $config['token'],
     $config['bot'],
-    $config['channel'],
+    $config['channel']
 );
 
 /** @var string $requestUrl */
