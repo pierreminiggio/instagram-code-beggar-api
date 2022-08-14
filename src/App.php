@@ -35,6 +35,8 @@ class App
       
         $username = substr($path, 1);
 
+        $message = 'Gimme code for ' . $username . '.';
+
         $bot = $this->bot;
         $chatId = $this->channelId;
 
