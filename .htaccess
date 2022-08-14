@@ -2,4 +2,4 @@ RewriteEngine on
 RewriteBase /
 
 RewriteCond %{REQUEST_URI}  !\.(php|css|js|html?|jpg|gif|png|pdf|woff|woff2)$
-RewriteRule ^ index.php [L]
+RewriteRule ^ public/index.php [L]
