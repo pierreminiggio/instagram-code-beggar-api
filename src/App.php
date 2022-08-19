@@ -88,7 +88,7 @@ class App
 
         // Wait for response
 
-        $waitTimeSeconds = 600;
+        $waitTimeSeconds = 1200;
         set_time_limit($waitTimeSeconds + 60);
 
         for ($i = 0; $i <= $waitTimeSeconds; $i++) {
